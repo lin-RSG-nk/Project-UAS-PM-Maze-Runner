@@ -1,8 +1,5 @@
 package ENTITY;
 
-import My2DMazeRunner.GamePanel;
-import My2DMazeRunner.KeyHandler;
-
 import java.awt.image.BufferedImage;
 
 public class Entity {
