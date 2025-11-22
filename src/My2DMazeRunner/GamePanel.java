@@ -98,6 +98,14 @@ public class GamePanel extends JPanel implements Runnable{
         if (gameState == MENU_STATE) {
             updateMenu();
         } else if (gameState == PLAYING_STATE) {
+            //Check if ESC is pressed to return to menu
+            if (keyH.escPressed && !keyH.escWasPressed) {
+                gameState = MENU_STATE;
+                keyH.escWasPressed = true;
+            } else if (!keyH.escPressed) {
+                keyH.escWasPressed = false;
+            }
+            
             player.update();
         }
     }

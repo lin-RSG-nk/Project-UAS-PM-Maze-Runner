@@ -7,9 +7,10 @@ public class KeyHandler implements KeyListener {
 
     public boolean upPressed, downPressed, leftPressed, rightPressed;
     public boolean enterPressed;
+    public boolean escPressed;
     
     //For menu navigation - to prevent continuous scrolling
-    public boolean upWasPressed, downWasPressed, enterWasPressed;
+    public boolean upWasPressed, downWasPressed, enterWasPressed, escWasPressed;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -35,6 +36,9 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_ENTER){
             enterPressed = true;
         }
+        if (code == KeyEvent.VK_ESCAPE){
+            escPressed = true;
+        }
     }
 
     @Override
@@ -55,6 +59,9 @@ public class KeyHandler implements KeyListener {
         }
         if (code == KeyEvent.VK_ENTER){
             enterPressed = false;
+        }
+        if (code == KeyEvent.VK_ESCAPE){
+            escPressed = false;
         }
     }
 }
