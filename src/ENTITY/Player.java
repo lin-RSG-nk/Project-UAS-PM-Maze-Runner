@@ -22,8 +22,9 @@ public class Player extends Entity{
 
     }
     public void setDefaultValues(){
-        x = 100;
-        y = 100;
+        // Start position at first empty tile (row 1, col 1)
+        x = gp.tileSize;
+        y = gp.tileSize;
         speed = 4;
         direction = "down";
     }
@@ -45,23 +46,30 @@ public class Player extends Entity{
     }
 
     public void update(){
+        int newX = x;
+        int newY = y;
 
         if (keyH.downPressed || keyH.leftPressed || keyH.upPressed || keyH.rightPressed){
             if (keyH.upPressed){
                 direction = "up";
-                y -= speed;
-
+                newY -= speed;
             } else if (keyH.downPressed) {
                 direction = "down";
-                y += speed;
+                newY += speed;
             } else if (keyH.leftPressed) {
                 direction = "left";
-                x -= speed;
-
+                newX -= speed;
             } else if (keyH.rightPressed) {
                 direction = "right";
-                x += speed;
+                newX += speed;
             }
+            
+            // Check collision before moving
+            if (!checkCollision(newX, newY)) {
+                x = newX;
+                y = newY;
+            }
+            
             spriteCounter ++;
             if (spriteCounter > 8){
                 if (spriteNumber ==1){
@@ -72,8 +80,32 @@ public class Player extends Entity{
                 spriteCounter = 0;
             }
         }
-
-
+    }
+    
+    public boolean checkCollision(int newX, int newY) {
+        // Check collision with walls
+        int leftCol = newX / gp.tileSize;
+        int rightCol = (newX + gp.tileSize - 1) / gp.tileSize;
+        int topRow = newY / gp.tileSize;
+        int bottomRow = (newY + gp.tileSize - 1) / gp.tileSize;
+        
+        int tileNum1, tileNum2;
+        
+        // Check top-left and top-right corners
+        tileNum1 = gp.levelM.getTileType(newX, newY);
+        tileNum2 = gp.levelM.getTileType(newX + gp.tileSize - 1, newY);
+        if (tileNum1 == 1 || tileNum2 == 1) {
+            return true; // Collision with wall
+        }
+        
+        // Check bottom-left and bottom-right corners
+        tileNum1 = gp.levelM.getTileType(newX, newY + gp.tileSize - 1);
+        tileNum2 = gp.levelM.getTileType(newX + gp.tileSize - 1, newY + gp.tileSize - 1);
+        if (tileNum1 == 1 || tileNum2 == 1) {
+            return true; // Collision with wall
+        }
+        
+        return false; // No collision
     }
     public  void draw(Graphics2D g2){
 //        g2.setColor(Color.white);

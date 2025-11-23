@@ -25,6 +25,7 @@ public class GamePanel extends JPanel implements Runnable{
     public final int LEVEL_SELECTION_STATE = 1;
     public final int SETTING_STATE = 2;
     public final int PLAYING_STATE = 3;
+    public final int GAME_OVER_STATE = 4;
     public int gameState = MENU_STATE;
 
     //FPS
@@ -42,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable{
     Font menuFont;
     int currentLevel = 1; // Current selected level (1, 2, or 3)
 
-    levelManager levelM = new levelManager(this);
+    public levelManager levelM = new levelManager(this);
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -121,6 +122,18 @@ public class GamePanel extends JPanel implements Runnable{
             }
             
             player.update();
+            
+            // Check if player reached finish point
+            checkFinishPoint();
+        } else if (gameState == GAME_OVER_STATE) {
+            //Handle game over screen
+            if (keyH.enterPressed && !keyH.enterWasPressed) {
+                gameState = MENU_STATE;
+                currentLevel = 1;
+                keyH.enterWasPressed = true;
+            } else if (!keyH.enterPressed) {
+                keyH.enterWasPressed = false;
+            }
         }
     }
 
@@ -221,9 +234,30 @@ public class GamePanel extends JPanel implements Runnable{
     }
 
     public void startLevel(int level) {
+        currentLevel = level;
         gameState = PLAYING_STATE;
         player.setDefaultValues();
         levelM.loadMap(level); // Load the selected level
+    }
+    
+    public void checkFinishPoint() {
+        // Check if player is on finish point
+        int playerCenterX = player.x + (tileSize / 2);
+        int playerCenterY = player.y + (tileSize / 2);
+        
+        if (levelM.isFinishPoint(playerCenterX, playerCenterY)) {
+            // Player reached finish point
+            if (currentLevel == 1) {
+                // Go to level 2
+                startLevel(2);
+            } else if (currentLevel == 2) {
+                // Go to level 3
+                startLevel(3);
+            } else if (currentLevel == 3) {
+                // Game completed!
+                gameState = GAME_OVER_STATE;
+            }
+        }
     }
     public void paintComponent(Graphics g){
         super.paintComponent(g);
@@ -239,6 +273,8 @@ public class GamePanel extends JPanel implements Runnable{
         } else if (gameState == PLAYING_STATE) {
             levelM.draw(g2);
             player.draw(g2);
+        } else if (gameState == GAME_OVER_STATE) {
+            drawGameOver(g2);
         }
 
         g2.dispose();
@@ -396,5 +432,42 @@ public class GamePanel extends JPanel implements Runnable{
         int backX = (screenWidth - backFm.stringWidth(backText)) / 2;
         g2.setColor(new Color(255, 255, 255, 180));
         g2.drawString(backText, backX, 680);
+    }
+
+    public void drawGameOver(Graphics2D g2) {
+        //Enable anti-aliasing for smoother rendering
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        
+        //Draw background
+        if (menuBackground != null) {
+            g2.drawImage(menuBackground, 0, 0, screenWidth, screenHeight, null);
+        } else {
+            g2.setColor(Color.BLACK);
+            g2.fillRect(0, 0, screenWidth, screenHeight);
+        }
+
+        //Draw victory title
+        g2.setFont(new Font("Courier New", Font.BOLD, 64));
+        String title = "CONGRATULATIONS!";
+        FontMetrics titleFm = g2.getFontMetrics();
+        int titleX = (screenWidth - titleFm.stringWidth(title)) / 2;
+        g2.setColor(new Color(255, 215, 0)); // Gold color
+        g2.drawString(title, titleX, 300);
+
+        //Draw victory message
+        g2.setFont(new Font("Courier New", Font.BOLD, 36));
+        String message = "You Completed All Levels!";
+        FontMetrics messageFm = g2.getFontMetrics();
+        int messageX = (screenWidth - messageFm.stringWidth(message)) / 2;
+        g2.setColor(new Color(255, 255, 150));
+        g2.drawString(message, messageX, 380);
+
+        //Draw instruction
+        g2.setFont(new Font("Courier New", Font.PLAIN, 28));
+        String instruction = "Press ENTER to return to main menu";
+        FontMetrics instructionFm = g2.getFontMetrics();
+        int instructionX = (screenWidth - instructionFm.stringWidth(instruction)) / 2;
+        g2.setColor(new Color(255, 255, 255, 200));
+        g2.drawString(instruction, instructionX, 500);
     }
 }

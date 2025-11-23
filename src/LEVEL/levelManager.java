@@ -33,6 +33,10 @@ public class levelManager {
             level [1] = new Tingkatan();
             level [1].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/wall.png"));
 
+            // Portal/Finish point uses earth tile (will be drawn with special effect)
+            level [2] = new Tingkatan();
+            level [2].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/earth.png"));
+
         }catch (IOException e){
             e.printStackTrace();;
         }
@@ -43,24 +47,23 @@ public class levelManager {
             String mapFile;
             switch (levelNumber) {
                 case 1:
-                    mapFile = "/Map/Maplvl1Example.txt";
+                    mapFile = "/Map/Maplvl1.txt";
                     break;
                 case 2:
-                    mapFile = "/Map/Maplvl2Example.txt";
+                    mapFile = "/Map/Maplvl2.txt";
                     break;
                 case 3:
-                    // If Level 3 map doesn't exist, use Level 2 map
-                    mapFile = "/Map/Maplvl2Example.txt";
+                    mapFile = "/Map/Maplvl3.txt";
                     break;
                 default:
-                    mapFile = "/Map/Maplvl1Example.txt";
+                    mapFile = "/Map/Maplvl1.txt";
                     break;
             }
             
             InputStream is = getClass().getResourceAsStream(mapFile);
             if (is == null) {
                 // Fallback to level 1 if file doesn't exist
-                is = getClass().getResourceAsStream("/Map/Maplvl1Example.txt");
+                is = getClass().getResourceAsStream("/Map/Maplvl1.txt");
             }
             
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -97,6 +100,18 @@ public class levelManager {
             while (col < gp.maxScreenCol) {
                 int mapNum = mapLevelnum[row][col];
                 g2.drawImage(level[mapNum].image, x, y, gp.tileSize, gp.tileSize, null);
+                
+                // Draw portal effect for finish point (value 2)
+                if (mapNum == 2) {
+                    // Draw glowing portal effect
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+                    g2.setColor(new Color(135, 206, 250, 150)); // Light blue glow
+                    g2.fillOval(x + 4, y + 4, gp.tileSize - 8, gp.tileSize - 8);
+                    g2.setColor(new Color(255, 255, 255, 200)); // White center
+                    g2.fillOval(x + 8, y + 8, gp.tileSize - 16, gp.tileSize - 16);
+                    g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+                }
+                
                 col++;
                 x += gp.tileSize;
             }
@@ -106,6 +121,30 @@ public class levelManager {
             y += gp.tileSize;
         }
 
+    }
+    
+    // Get tile type at world coordinates
+    public int getTileType(int worldX, int worldY) {
+        int col = worldX / gp.tileSize;
+        int row = worldY / gp.tileSize;
+        
+        if (col < 0 || col >= gp.maxScreenCol || row < 0 || row >= gp.maxScreenRow) {
+            return 1; // Wall if out of bounds
+        }
+        
+        return mapLevelnum[row][col];
+    }
+    
+    // Check if position is finish point
+    public boolean isFinishPoint(int worldX, int worldY) {
+        int col = worldX / gp.tileSize;
+        int row = worldY / gp.tileSize;
+        
+        if (col < 0 || col >= gp.maxScreenCol || row < 0 || row >= gp.maxScreenRow) {
+            return false;
+        }
+        
+        return mapLevelnum[row][col] == 2;
     }
 
 }
