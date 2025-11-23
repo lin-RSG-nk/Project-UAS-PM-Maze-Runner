@@ -4,19 +4,25 @@ import My2DMazeRunner.GamePanel;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 
 public class levelManager {
 
     GamePanel gp;
     Tingkatan [] level ;
+    int[][] mapLevelnum;
 
     public levelManager(GamePanel gp){
         this.gp = gp;
         level = new Tingkatan[10];
 
+        mapLevelnum = new int[gp.maxScreenRow][gp.maxScreenCol];
         getLevelImage();
+        loadMap();
     }
     public void getLevelImage(){
 
@@ -32,8 +38,63 @@ public class levelManager {
         }
 
     }
+    public  void loadMap(){
+        try{
+            InputStream is = getClass().getResourceAsStream("/Map/Maplvl2Example.txt");
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            int col = 0;
+            int row = 0;
+
+            while (row < gp.maxScreenRow) {       // 24 row
+                String line = br.readLine();
+                String[] numbers = line.split(" ");
+
+                while (col < gp.maxScreenCol) {   // 40 col
+                    int num = Integer.parseInt(numbers[col]);
+                    mapLevelnum[row][col] = num;
+                    col++;
+                }
+                col = 0;
+                row++;
+            }
+
+
+
+            br.close();
+
+        }catch (Exception e ){
+
+        }
+    }
     public void draw (Graphics2D g2){
-        g2.drawImage(level[0].image, 0, 0, gp.tileSize, gp.tileSize, null);
+        int col = 0;
+        int row = 0;
+        int x = 0;
+        int y = 0;
+
+        while (row < gp.maxScreenRow) {
+            while (col < gp.maxScreenCol) {
+                int mapNum = mapLevelnum[row][col];
+                g2.drawImage(level[mapNum].image, x, y, gp.tileSize, gp.tileSize, null);
+                col++;
+                x += gp.tileSize;
+            }
+            col = 0;
+            x = 0;
+            row++;
+            y += gp.tileSize;
+        }
+
     }
 
 }
+
+
+
+
+
+
+
+
+
+
