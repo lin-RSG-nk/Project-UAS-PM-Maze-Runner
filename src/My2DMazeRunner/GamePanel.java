@@ -1,6 +1,7 @@
 package My2DMazeRunner;
 
 import ENTITY.Player;
+import LEVEL.Tingkatan;
 import LEVEL.levelManager;
 
 import javax.imageio.ImageIO;
@@ -36,7 +37,7 @@ public class GamePanel extends JPanel implements Runnable{
     int menuOption = 0; // 0: New Game, 1: Continue, 2: Exit
     Font menuFont;
 
-//    levelManager levelM = new levelManager(this);
+    levelManager levelM = new levelManager(this);
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -163,6 +164,7 @@ public class GamePanel extends JPanel implements Runnable{
         gameState = PLAYING_STATE;
         player.setDefaultValues();
         // Reset game state here if needed
+
     }
 
     public void continueGame() {
@@ -178,6 +180,7 @@ public class GamePanel extends JPanel implements Runnable{
         if (gameState == MENU_STATE) {
             drawMenu(g2);
         } else if (gameState == PLAYING_STATE) {
+            levelM.draw(g2);
             player.draw(g2);
         }
 

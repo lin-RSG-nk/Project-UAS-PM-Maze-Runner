@@ -22,10 +22,10 @@ public class levelManager {
 
         try{
             level [0] = new Tingkatan();
-            level [0].image = ImageIO.read(getClass().getResourceAsStream("Resource/Tiles/earth.png"));
+            level [0].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/earth.png"));
 
             level [1] = new Tingkatan();
-            level [1].image = ImageIO.read(getClass().getResourceAsStream("Resource/Tiles/wall.png"));
+            level [1].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/wall.png"));
 
         }catch (IOException e){
             e.printStackTrace();;
