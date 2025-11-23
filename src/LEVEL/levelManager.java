@@ -15,6 +15,8 @@ public class levelManager {
     GamePanel gp;
     Tingkatan [] level ;
     int[][] mapLevelnum;
+    public int startRow = 1, startCol = 1; // Start position (S)
+    public int goalRow = 22, goalCol = 37; // Goal position (G)
 
     public levelManager(GamePanel gp){
         this.gp = gp;
@@ -67,20 +69,39 @@ public class levelManager {
             }
             
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            int col = 0;
             int row = 0;
 
             while (row < gp.maxScreenRow) {       // 24 row
                 String line = br.readLine();
                 if (line == null) break; // Handle case where file has fewer rows
-                String[] numbers = line.split(" ");
-
-                while (col < gp.maxScreenCol && col < numbers.length) {   // 40 col
-                    int num = Integer.parseInt(numbers[col]);
-                    mapLevelnum[row][col] = num;
-                    col++;
+                
+                // Remove spaces if any, then process character by character
+                line = line.replaceAll("\\s+", "");
+                
+                for (int col = 0; col < gp.maxScreenCol && col < line.length(); col++) {
+                    char ch = line.charAt(col);
+                    switch (ch) {
+                        case '#': // Wall
+                            mapLevelnum[row][col] = 1;
+                            break;
+                        case '.': // Path (earth)
+                            mapLevelnum[row][col] = 0;
+                            break;
+                        case 'S': // Start position
+                            mapLevelnum[row][col] = 0; // Start is also a path
+                            startRow = row;
+                            startCol = col;
+                            break;
+                        case 'G': // Goal position
+                            mapLevelnum[row][col] = 2; // Goal uses value 2
+                            goalRow = row;
+                            goalCol = col;
+                            break;
+                        default:
+                            mapLevelnum[row][col] = 1; // Default to wall
+                            break;
+                    }
                 }
-                col = 0;
                 row++;
             }
 

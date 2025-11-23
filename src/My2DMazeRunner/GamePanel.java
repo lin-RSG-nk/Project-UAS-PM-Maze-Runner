@@ -25,8 +25,13 @@ public class GamePanel extends JPanel implements Runnable{
     public final int LEVEL_SELECTION_STATE = 1;
     public final int SETTING_STATE = 2;
     public final int PLAYING_STATE = 3;
-    public final int GAME_OVER_STATE = 4;
+    public final int LEVEL_COMPLETE_STATE = 4;
+    public final int GAME_OVER_STATE = 5;
     public int gameState = MENU_STATE;
+    
+    // Level Complete message
+    long levelCompleteTime = 0;
+    final long LEVEL_COMPLETE_DURATION = 2000; // 2 seconds in milliseconds
 
     //FPS
     int fps = 60;
@@ -34,8 +39,7 @@ public class GamePanel extends JPanel implements Runnable{
     KeyHandler keyH = new KeyHandler();
 
     Thread gameThread;
-    Player player = new Player(this, keyH);
-
+    
     //Menu
     BufferedImage menuBackground;
     int menuOption = 0; // 0: Level, 1: Setting, 2: Exit
@@ -44,6 +48,7 @@ public class GamePanel extends JPanel implements Runnable{
     int currentLevel = 1; // Current selected level (1, 2, or 3)
 
     public levelManager levelM = new levelManager(this);
+    Player player = new Player(this, keyH);
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -125,6 +130,8 @@ public class GamePanel extends JPanel implements Runnable{
             
             // Check if player reached finish point
             checkFinishPoint();
+        } else if (gameState == LEVEL_COMPLETE_STATE) {
+            updateLevelComplete();
         } else if (gameState == GAME_OVER_STATE) {
             //Handle game over screen
             if (keyH.enterPressed && !keyH.enterWasPressed) {
@@ -235,9 +242,13 @@ public class GamePanel extends JPanel implements Runnable{
 
     public void startLevel(int level) {
         currentLevel = level;
+        levelM.loadMap(level); // Load the selected level first to get start position
+        // Update player position to start position after map is loaded
+        if (levelM != null) {
+            player.x = levelM.startCol * tileSize;
+            player.y = levelM.startRow * tileSize;
+        }
         gameState = PLAYING_STATE;
-        player.setDefaultValues();
-        levelM.loadMap(level); // Load the selected level
     }
     
     public void checkFinishPoint() {
@@ -245,8 +256,17 @@ public class GamePanel extends JPanel implements Runnable{
         int playerCenterX = player.x + (tileSize / 2);
         int playerCenterY = player.y + (tileSize / 2);
         
-        if (levelM.isFinishPoint(playerCenterX, playerCenterY)) {
-            // Player reached finish point
+        if (levelM.isFinishPoint(playerCenterX, playerCenterY) && gameState == PLAYING_STATE) {
+            // Player reached finish point - show "Level Complete!" message
+            gameState = LEVEL_COMPLETE_STATE;
+            levelCompleteTime = System.currentTimeMillis();
+        }
+    }
+    
+    public void updateLevelComplete() {
+        // Check if enough time has passed
+        if (System.currentTimeMillis() - levelCompleteTime >= LEVEL_COMPLETE_DURATION) {
+            // Move to next level or game over
             if (currentLevel == 1) {
                 // Go to level 2
                 startLevel(2);
@@ -273,6 +293,10 @@ public class GamePanel extends JPanel implements Runnable{
         } else if (gameState == PLAYING_STATE) {
             levelM.draw(g2);
             player.draw(g2);
+        } else if (gameState == LEVEL_COMPLETE_STATE) {
+            levelM.draw(g2);
+            player.draw(g2);
+            drawLevelComplete(g2);
         } else if (gameState == GAME_OVER_STATE) {
             drawGameOver(g2);
         }
@@ -469,5 +493,39 @@ public class GamePanel extends JPanel implements Runnable{
         int instructionX = (screenWidth - instructionFm.stringWidth(instruction)) / 2;
         g2.setColor(new Color(255, 255, 255, 200));
         g2.drawString(instruction, instructionX, 500);
+    }
+
+    public void drawLevelComplete(Graphics2D g2) {
+        //Enable anti-aliasing for smoother rendering
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        
+        //Draw semi-transparent overlay
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+        g2.setColor(Color.BLACK);
+        g2.fillRect(0, 0, screenWidth, screenHeight);
+        g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+
+        //Draw "Level Complete!" message
+        g2.setFont(new Font("Courier New", Font.BOLD, 72));
+        String message = "Level Complete!";
+        FontMetrics messageFm = g2.getFontMetrics();
+        int messageX = (screenWidth - messageFm.stringWidth(message)) / 2;
+        int messageY = screenHeight / 2;
+        
+        //Draw shadow
+        g2.setColor(new Color(0, 0, 0, 150));
+        g2.drawString(message, messageX + 3, messageY + 3);
+        
+        //Draw main text
+        g2.setColor(new Color(255, 215, 0)); // Gold color
+        g2.drawString(message, messageX, messageY);
+        
+        //Draw level number
+        g2.setFont(new Font("Courier New", Font.BOLD, 36));
+        String levelText = "Level " + currentLevel + " Completed!";
+        FontMetrics levelFm = g2.getFontMetrics();
+        int levelX = (screenWidth - levelFm.stringWidth(levelText)) / 2;
+        g2.setColor(new Color(255, 255, 150));
+        g2.drawString(levelText, levelX, messageY + 60);
     }
 }

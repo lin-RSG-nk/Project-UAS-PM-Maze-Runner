@@ -22,9 +22,16 @@ public class Player extends Entity{
 
     }
     public void setDefaultValues(){
-        // Start position at first empty tile (row 1, col 1)
-        x = gp.tileSize;
-        y = gp.tileSize;
+        // Start position at S position from level manager
+        // If levelM is not initialized yet, use default position
+        if (gp.levelM != null) {
+            x = gp.levelM.startCol * gp.tileSize;
+            y = gp.levelM.startRow * gp.tileSize;
+        } else {
+            // Fallback to default position (row 1, col 1)
+            x = gp.tileSize;
+            y = gp.tileSize;
+        }
         speed = 4;
         direction = "down";
     }
