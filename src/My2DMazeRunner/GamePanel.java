@@ -1,6 +1,7 @@
 package My2DMazeRunner;
 
 import ENTITY.Player;
+import LEVEL.levelManager;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -26,6 +27,7 @@ public class GamePanel extends JPanel implements Runnable{
     int fps = 60;
 
     KeyHandler keyH = new KeyHandler();
+
     Thread gameThread;
     Player player = new Player(this, keyH);
 
@@ -33,6 +35,8 @@ public class GamePanel extends JPanel implements Runnable{
     BufferedImage menuBackground;
     int menuOption = 0; // 0: New Game, 1: Continue, 2: Exit
     Font menuFont;
+
+//    levelManager levelM = new levelManager(this);
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
