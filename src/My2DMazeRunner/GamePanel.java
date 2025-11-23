@@ -1,14 +1,12 @@
 package My2DMazeRunner;
 
 import ENTITY.Player;
-import LEVEL.Tingkatan;
 import LEVEL.levelManager;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public class GamePanel extends JPanel implements Runnable{
     //Screen Setting
@@ -24,7 +22,9 @@ public class GamePanel extends JPanel implements Runnable{
 
     //Game State
     public final int MENU_STATE = 0;
-    public final int PLAYING_STATE = 1;
+    public final int LEVEL_SELECTION_STATE = 1;
+    public final int SETTING_STATE = 2;
+    public final int PLAYING_STATE = 3;
     public int gameState = MENU_STATE;
 
     //FPS
@@ -37,8 +37,10 @@ public class GamePanel extends JPanel implements Runnable{
 
     //Menu
     BufferedImage menuBackground;
-    int menuOption = 0; // 0: New Game, 1: Continue, 2: Exit
+    int menuOption = 0; // 0: Level, 1: Setting, 2: Exit
+    int levelOption = 0; // 0: Level 1, 1: Level 2, 2: Level 3
     Font menuFont;
+    int currentLevel = 1; // Current selected level (1, 2, or 3)
 
     levelManager levelM = new levelManager(this);
 
@@ -105,6 +107,10 @@ public class GamePanel extends JPanel implements Runnable{
     public void update(){
         if (gameState == MENU_STATE) {
             updateMenu();
+        } else if (gameState == LEVEL_SELECTION_STATE) {
+            updateLevelSelection();
+        } else if (gameState == SETTING_STATE) {
+            updateSetting();
         } else if (gameState == PLAYING_STATE) {
             //Check if ESC is pressed to return to menu
             if (keyH.escPressed && !keyH.escWasPressed) {
@@ -151,11 +157,12 @@ public class GamePanel extends JPanel implements Runnable{
 
     public void selectMenuOption() {
         switch (menuOption) {
-            case 0: // New Game
-                startNewGame();
+            case 0: // Level
+                gameState = LEVEL_SELECTION_STATE;
+                levelOption = 0; // Reset to first level option
                 break;
-            case 1: // Continue
-                continueGame();
+            case 1: // Setting
+                gameState = SETTING_STATE;
                 break;
             case 2: // Exit
                 System.exit(0);
@@ -163,17 +170,60 @@ public class GamePanel extends JPanel implements Runnable{
         }
     }
 
-    public void startNewGame() {
-        gameState = PLAYING_STATE;
-        player.setDefaultValues();
-        // Reset game state here if needed
+    public void updateLevelSelection() {
+        //Handle level selection navigation
+        if (keyH.upPressed && !keyH.upWasPressed) {
+            levelOption--;
+            if (levelOption < 0) {
+                levelOption = 2;
+            }
+            keyH.upWasPressed = true;
+        } else if (!keyH.upPressed) {
+            keyH.upWasPressed = false;
+        }
 
+        if (keyH.downPressed && !keyH.downWasPressed) {
+            levelOption++;
+            if (levelOption > 2) {
+                levelOption = 0;
+            }
+            keyH.downWasPressed = true;
+        } else if (!keyH.downPressed) {
+            keyH.downWasPressed = false;
+        }
+
+        //Handle level selection
+        if (keyH.enterPressed && !keyH.enterWasPressed) {
+            currentLevel = levelOption + 1; // Level 1, 2, or 3
+            startLevel(currentLevel);
+            keyH.enterWasPressed = true;
+        } else if (!keyH.enterPressed) {
+            keyH.enterWasPressed = false;
+        }
+
+        //Handle back to main menu
+        if (keyH.escPressed && !keyH.escWasPressed) {
+            gameState = MENU_STATE;
+            keyH.escWasPressed = true;
+        } else if (!keyH.escPressed) {
+            keyH.escWasPressed = false;
+        }
     }
 
-    public void continueGame() {
+    public void updateSetting() {
+        //Handle back to main menu
+        if (keyH.escPressed && !keyH.escWasPressed) {
+            gameState = MENU_STATE;
+            keyH.escWasPressed = true;
+        } else if (!keyH.escPressed) {
+            keyH.escWasPressed = false;
+        }
+    }
+
+    public void startLevel(int level) {
         gameState = PLAYING_STATE;
-        // Load saved game state here if needed
-        // For now, it's the same as new game
+        player.setDefaultValues();
+        levelM.loadMap(level); // Load the selected level
     }
     public void paintComponent(Graphics g){
         super.paintComponent(g);
@@ -182,6 +232,10 @@ public class GamePanel extends JPanel implements Runnable{
 
         if (gameState == MENU_STATE) {
             drawMenu(g2);
+        } else if (gameState == LEVEL_SELECTION_STATE) {
+            drawLevelSelection(g2);
+        } else if (gameState == SETTING_STATE) {
+            drawSetting(g2);
         } else if (gameState == PLAYING_STATE) {
             levelM.draw(g2);
             player.draw(g2);
@@ -204,7 +258,7 @@ public class GamePanel extends JPanel implements Runnable{
 
         //Draw menu options - Pixel art style
         g2.setFont(menuFont);
-        String[] menuOptions = {"New Game", "Continue", "Exit"};
+        String[] menuOptions = {"Level", "Setting", "Exit"};
         int menuY = 420; // Adjusted position for better placement on background
         int menuSpacing = 75;
 
@@ -239,5 +293,108 @@ public class GamePanel extends JPanel implements Runnable{
                 g2.drawString(option, menuX, currentY);
             }
         }
+    }
+
+    public void drawLevelSelection(Graphics2D g2) {
+        //Enable anti-aliasing for smoother rendering
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        
+        //Draw background
+        if (menuBackground != null) {
+            g2.drawImage(menuBackground, 0, 0, screenWidth, screenHeight, null);
+        } else {
+            g2.setColor(Color.BLACK);
+            g2.fillRect(0, 0, screenWidth, screenHeight);
+        }
+
+        //Draw level selection title
+        g2.setFont(new Font("Courier New", Font.BOLD, 56));
+        String title = "SELECT LEVEL";
+        FontMetrics titleFm = g2.getFontMetrics();
+        int titleX = (screenWidth - titleFm.stringWidth(title)) / 2;
+        g2.setColor(new Color(255, 255, 150));
+        g2.drawString(title, titleX, 350);
+
+        //Draw level options
+        g2.setFont(menuFont);
+        String[] levelOptions = {"Level 1", "Level 2", "Level 3"};
+        int menuY = 480;
+        int menuSpacing = 75;
+
+        for (int i = 0; i < levelOptions.length; i++) {
+            String option = levelOptions[i];
+            FontMetrics menuFm = g2.getFontMetrics(menuFont);
+            int menuX = (screenWidth - menuFm.stringWidth(option)) / 2;
+            int currentY = menuY + (i * menuSpacing);
+
+            //Highlight selected option
+            if (i == levelOption) {
+                //Draw selection indicator
+                g2.setColor(new Color(255, 215, 0));
+                int arrowSize = 12;
+                int arrowX = menuX - 35;
+                int arrowY = currentY - 20;
+                
+                g2.fillPolygon(new int[]{arrowX, arrowX + arrowSize, arrowX + arrowSize}, 
+                              new int[]{arrowY, arrowY - arrowSize, arrowY + arrowSize}, 3);
+                
+                //Draw text with highlight
+                g2.setColor(new Color(255, 255, 150));
+                g2.drawString(option, menuX, currentY);
+                
+                //Add subtle glow effect
+                g2.setColor(new Color(255, 215, 0, 100));
+                g2.drawString(option, menuX + 1, currentY + 1);
+            } else {
+                //Draw normal text
+                g2.setColor(new Color(255, 255, 255, 220));
+                g2.drawString(option, menuX, currentY);
+            }
+        }
+
+        //Draw back instruction
+        g2.setFont(new Font("Courier New", Font.PLAIN, 24));
+        String backText = "Press ESC to go back";
+        FontMetrics backFm = g2.getFontMetrics();
+        int backX = (screenWidth - backFm.stringWidth(backText)) / 2;
+        g2.setColor(new Color(255, 255, 255, 180));
+        g2.drawString(backText, backX, 680);
+    }
+
+    public void drawSetting(Graphics2D g2) {
+        //Enable anti-aliasing for smoother rendering
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        
+        //Draw background
+        if (menuBackground != null) {
+            g2.drawImage(menuBackground, 0, 0, screenWidth, screenHeight, null);
+        } else {
+            g2.setColor(Color.BLACK);
+            g2.fillRect(0, 0, screenWidth, screenHeight);
+        }
+
+        //Draw setting title
+        g2.setFont(new Font("Courier New", Font.BOLD, 56));
+        String title = "SETTINGS";
+        FontMetrics titleFm = g2.getFontMetrics();
+        int titleX = (screenWidth - titleFm.stringWidth(title)) / 2;
+        g2.setColor(new Color(255, 255, 150));
+        g2.drawString(title, titleX, 400);
+
+        //Draw placeholder text
+        g2.setFont(new Font("Courier New", Font.PLAIN, 32));
+        String placeholder = "Settings menu coming soon...";
+        FontMetrics placeholderFm = g2.getFontMetrics();
+        int placeholderX = (screenWidth - placeholderFm.stringWidth(placeholder)) / 2;
+        g2.setColor(new Color(255, 255, 255, 200));
+        g2.drawString(placeholder, placeholderX, 500);
+
+        //Draw back instruction
+        g2.setFont(new Font("Courier New", Font.PLAIN, 24));
+        String backText = "Press ESC to go back";
+        FontMetrics backFm = g2.getFontMetrics();
+        int backX = (screenWidth - backFm.stringWidth(backText)) / 2;
+        g2.setColor(new Color(255, 255, 255, 180));
+        g2.drawString(backText, backX, 680);
     }
 }

@@ -22,7 +22,7 @@ public class levelManager {
 
         mapLevelnum = new int[gp.maxScreenRow][gp.maxScreenCol];
         getLevelImage();
-        loadMap();
+        loadMap(1); // Load default level 1
     }
     public void getLevelImage(){
 
@@ -38,18 +38,41 @@ public class levelManager {
         }
 
     }
-    public  void loadMap(){
-        try{
-            InputStream is = getClass().getResourceAsStream("/Map/Maplvl2Example.txt");
+    public void loadMap(int levelNumber) {
+        try {
+            String mapFile;
+            switch (levelNumber) {
+                case 1:
+                    mapFile = "/Map/Maplvl1Example.txt";
+                    break;
+                case 2:
+                    mapFile = "/Map/Maplvl2Example.txt";
+                    break;
+                case 3:
+                    // If Level 3 map doesn't exist, use Level 2 map
+                    mapFile = "/Map/Maplvl2Example.txt";
+                    break;
+                default:
+                    mapFile = "/Map/Maplvl1Example.txt";
+                    break;
+            }
+            
+            InputStream is = getClass().getResourceAsStream(mapFile);
+            if (is == null) {
+                // Fallback to level 1 if file doesn't exist
+                is = getClass().getResourceAsStream("/Map/Maplvl1Example.txt");
+            }
+            
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             int col = 0;
             int row = 0;
 
             while (row < gp.maxScreenRow) {       // 24 row
                 String line = br.readLine();
+                if (line == null) break; // Handle case where file has fewer rows
                 String[] numbers = line.split(" ");
 
-                while (col < gp.maxScreenCol) {   // 40 col
+                while (col < gp.maxScreenCol && col < numbers.length) {   // 40 col
                     int num = Integer.parseInt(numbers[col]);
                     mapLevelnum[row][col] = num;
                     col++;
@@ -58,12 +81,10 @@ public class levelManager {
                 row++;
             }
 
-
-
             br.close();
 
-        }catch (Exception e ){
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     public void draw (Graphics2D g2){
