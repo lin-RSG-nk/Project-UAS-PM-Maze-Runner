@@ -4,7 +4,7 @@ import java.awt.*;
 
 public class MenuRenderer {
     private static final Font MENU_FONT = new Font("Courier New", Font.BOLD, 48);
-    private static final String[] MENU_OPTIONS = {"Level", "Setting", "Exit"};
+    private static final String[] MENU_OPTIONS = {"Level", "Information", "Exit"};
 
     public static void render(Graphics2D g2, GamePanel gp, int menuOption) {
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
