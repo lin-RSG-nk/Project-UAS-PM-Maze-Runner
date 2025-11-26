@@ -3,7 +3,6 @@ package My2DMazeRunner;
 import ENTITY.Player;
 import LEVEL.levelManager;
 import State.GameStateManager;
-
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -21,7 +20,7 @@ public class GamePanel extends JPanel implements Runnable {
     // Game States
     public final int MENU_STATE = 0;
     public final int LEVEL_SELECTION_STATE = 1;
-    public final int SETTING_STATE = 2;
+    public final int INFORMATION_STATE = 2;
     public final int PLAYING_STATE = 3;
     public final int LEVEL_COMPLETE_STATE = 4;
     public final int GAME_OVER_STATE = 5;

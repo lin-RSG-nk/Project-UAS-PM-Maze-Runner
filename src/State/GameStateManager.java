@@ -11,7 +11,7 @@ public class GameStateManager {
     // State instances
     private MenuState menuState;
     private LevelSelectionState levelSelectionState;
-    private SettingState settingState;
+    private InformationState informationState;
     private PlayingState playingState;
     private LevelCompleteState levelCompleteState;
     private GameOverState gameOverState;
@@ -25,7 +25,7 @@ public class GameStateManager {
     private void initializeStates() {
         menuState = new MenuState(gp);
         levelSelectionState = new LevelSelectionState(gp);
-        settingState = new SettingState(gp);
+        informationState = new InformationState(gp);
         playingState = new PlayingState(gp);
         levelCompleteState = new LevelCompleteState(gp);
         gameOverState = new GameOverState(gp);
@@ -51,8 +51,8 @@ public class GameStateManager {
             case 1: // LEVEL_SELECTION_STATE
                 currentState = levelSelectionState;
                 break;
-            case 2: // SETTING_STATE
-                currentState = settingState;
+            case 2: // INFORMATION_STATE
+                currentState = informationState;
                 break;
             case 3: // PLAYING_STATE
                 currentState = playingState;

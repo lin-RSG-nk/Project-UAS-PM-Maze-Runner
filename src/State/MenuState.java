@@ -41,8 +41,8 @@ public class MenuState implements GameState {
                 case 0: // Level
                     gp.gameStateManager.setState(gp.LEVEL_SELECTION_STATE);
                     break;
-                case 1: // Setting
-                    gp.gameStateManager.setState(gp.SETTING_STATE);
+                case 1: // Information
+                    gp.gameStateManager.setState(gp.INFORMATION_STATE);
                     break;
                 case 2: // Exit
                     System.exit(0);
