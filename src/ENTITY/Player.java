@@ -2,40 +2,50 @@ package ENTITY;
 
 import My2DMazeRunner.GamePanel;
 import My2DMazeRunner.KeyHandler;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class Player extends Entity{
+public class Player extends Entity {
     GamePanel gp;
     KeyHandler keyH;
 
-    public Player (GamePanel gp, KeyHandler keyH){
-
-        this.gp  = gp;
+    public Player(GamePanel gp, KeyHandler keyH) {
+        this.gp = gp;
         this.keyH = keyH;
-
         setDefaultValues();
-        getPlayerimage();
-
+        getPlayerImage();
+        setCollisionBox();
     }
-    public void setDefaultValues(){
-        // Start position at S position from level manager
-        // If levelM is not initialized yet, use default position
+
+    public void setDefaultValues() {
         if (gp.levelM != null) {
             x = gp.levelM.startCol * gp.tileSize;
             y = gp.levelM.startRow * gp.tileSize;
         } else {
-            // Fallback to default position (row 1, col 1)
             x = gp.tileSize;
             y = gp.tileSize;
         }
         speed = 4;
         direction = "down";
     }
-    public void getPlayerimage(){
+
+    // Set collision box yang lebih kecil dari karakter
+    public void setCollisionBox() {
+        // Ukuran collision box (lebih kecil dari tileSize)
+        collisionWidth = 17;  // Lebih kecil dari 32 (tileSize)
+        collisionHeight = 17; // Lebih kecil dari 32 (tileSize)
+
+        // Posisi collision box (di tengah karakter)
+        collisionDefaultX = (gp.tileSize - collisionWidth) / 2;
+        collisionDefaultY = (gp.tileSize - collisionHeight) / 2;
+
+        collisionX = x + collisionDefaultX;
+        collisionY = y + collisionDefaultY;
+    }
+
+    public void getPlayerImage() {
         try {
             down1 = ImageIO.read(getClass().getResourceAsStream("/Player/boy_down_1.png"));
             down2 = ImageIO.read(getClass().getResourceAsStream("/Player/boy_down_2.png"));
@@ -45,109 +55,135 @@ public class Player extends Entity{
             left2 = ImageIO.read(getClass().getResourceAsStream("/Player/boy_left_2.png"));
             right1 = ImageIO.read(getClass().getResourceAsStream("/Player/boy_right_1.png"));
             right2 = ImageIO.read(getClass().getResourceAsStream("/Player/boy_right_2.png"));
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void update(){
+    public void update() {
+        // Update collision box position
+        collisionX = x + collisionDefaultX;
+        collisionY = y + collisionDefaultY;
+
+        // Reset movement flags
+        boolean isMoving = false;
         int newX = x;
         int newY = y;
 
-        if (keyH.downPressed || keyH.leftPressed || keyH.upPressed || keyH.rightPressed){
-            if (keyH.upPressed){
-                direction = "up";
-                newY -= speed;
-            } else if (keyH.downPressed) {
-                direction = "down";
-                newY += speed;
-            } else if (keyH.leftPressed) {
-                direction = "left";
-                newX -= speed;
-            } else if (keyH.rightPressed) {
-                direction = "right";
-                newX += speed;
-            }
-            
-            // Check collision before moving
-            if (!checkCollision(newX, newY)) {
-                x = newX;
-                y = newY;
-            }
-            
-            spriteCounter ++;
-            if (spriteCounter > 8){
-                if (spriteNumber ==1){
+        // Handle movement input
+        if (keyH.upPressed) {
+            direction = "up";
+            newY -= speed;
+            isMoving = true;
+        } else if (keyH.downPressed) {
+            direction = "down";
+            newY += speed;
+            isMoving = true;
+        } else if (keyH.leftPressed) {
+            direction = "left";
+            newX -= speed;
+            isMoving = true;
+        } else if (keyH.rightPressed) {
+            direction = "right";
+            newX += speed;
+            isMoving = true;
+        }
+
+        // Check collision sebelum bergerak (menggunakan collision box)
+        if (!checkCollision(newX, newY)) {
+            x = newX;
+            y = newY;
+        }
+
+        // Handle animasi hanya ketika bergerak
+        if (isMoving) {
+            spriteCounter++;
+            if (spriteCounter > 10) {
+                if (spriteNumber == 1) {
                     spriteNumber = 2;
                 } else if (spriteNumber == 2) {
                     spriteNumber = 1;
                 }
                 spriteCounter = 0;
             }
+        } else {
+            // reset ke gambar 1 kalo ga gerak
+            spriteNumber = 1;
+            spriteCounter = 0;
         }
     }
-    
+
     public boolean checkCollision(int newX, int newY) {
-        // Check collision with walls
-        int leftCol = newX / gp.tileSize;
-        int rightCol = (newX + gp.tileSize - 1) / gp.tileSize;
-        int topRow = newY / gp.tileSize;
-        int bottomRow = (newY + gp.tileSize - 1) / gp.tileSize;
-        
+        // Hitung posisi collision box yang baru
+        int newCollisionX = newX + collisionDefaultX;
+        int newCollisionY = newY + collisionDefaultY;
+
+        // Check collision dengan collision box yang lebih kecil
+        int leftCol = newCollisionX / gp.tileSize;
+        int rightCol = (newCollisionX + collisionWidth - 1) / gp.tileSize;
+        int topRow = newCollisionY / gp.tileSize;
+        int bottomRow = (newCollisionY + collisionHeight - 1) / gp.tileSize;
+
         int tileNum1, tileNum2;
-        
-        // Check top-left and top-right corners
-        tileNum1 = gp.levelM.getTileType(newX, newY);
-        tileNum2 = gp.levelM.getTileType(newX + gp.tileSize - 1, newY);
+
+        // cek sekeliling menggunakan collision box
+        tileNum1 = gp.levelM.getTileType(newCollisionX, newCollisionY);
+        tileNum2 = gp.levelM.getTileType(newCollisionX + collisionWidth - 1, newCollisionY);
         if (tileNum1 == 1 || tileNum2 == 1) {
-            return true; // Collision with wall
+            return true;
         }
-        
-        // Check bottom-left and bottom-right corners
-        tileNum1 = gp.levelM.getTileType(newX, newY + gp.tileSize - 1);
-        tileNum2 = gp.levelM.getTileType(newX + gp.tileSize - 1, newY + gp.tileSize - 1);
+
+        tileNum1 = gp.levelM.getTileType(newCollisionX, newCollisionY + collisionHeight - 1);
+        tileNum2 = gp.levelM.getTileType(newCollisionX + collisionWidth - 1, newCollisionY + collisionHeight - 1);
         if (tileNum1 == 1 || tileNum2 == 1) {
-            return true; // Collision with wall
+            return true;
         }
-        
-        return false; // No collision
+
+        return false;
     }
-    public  void draw(Graphics2D g2){
-//        g2.setColor(Color.white);
-//        g2.fillRect(x,y, gp.tileSize, gp.tileSize);
+
+    public void draw(Graphics2D g2) {
         BufferedImage image = null;
 
-        switch (direction){
+        switch (direction) {
             case "up":
-                if (spriteNumber == 1){
+                if (spriteNumber == 1) {
                     image = up1;
-                }else {
+                } else {
                     image = up2;
                 }
                 break;
             case "down":
-                if (spriteNumber == 1){
+                if (spriteNumber == 1) {
                     image = down1;
-                }else {
+                } else {
                     image = down2;
-                }                break;
+                }
+                break;
             case "left":
-                if (spriteNumber == 1){
+                if (spriteNumber == 1) {
                     image = left1;
-                }else {
+                } else {
                     image = left2;
                 }
                 break;
             case "right":
-                if (spriteNumber == 1){
+                if (spriteNumber == 1) {
                     image = right1;
-                }else {
+                } else {
                     image = right2;
                 }
                 break;
         }
-        g2.drawImage(image, x, y ,gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+
+        // DEBUG: Gambar collision box (bisa di-comment setelah testing)
+        // drawCollisionBox(g2);
+    }
+
+    // Method untuk debugging - gambar collision box
+    public void drawCollisionBox(Graphics2D g2) {
+        g2.setColor(Color.RED);
+        g2.drawRect(collisionX, collisionY, collisionWidth, collisionHeight);
     }
 }

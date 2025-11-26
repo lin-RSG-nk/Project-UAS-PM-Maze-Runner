@@ -30,14 +30,14 @@ public class levelManager {
 
         try{
             level [0] = new Tingkatan();
-            level [0].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/earth.png"));
+            level [0].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/grass.png"));
 
             level [1] = new Tingkatan();
             level [1].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/wall.png"));
 
             // Portal/Finish point uses earth tile (will be drawn with special effect)
             level [2] = new Tingkatan();
-            level [2].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/earth.png"));
+            level [2].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/grass.png"));
 
         }catch (IOException e){
             e.printStackTrace();;
@@ -73,7 +73,7 @@ public class levelManager {
 
             while (row < gp.maxScreenRow) {       // 24 row
                 String line = br.readLine();
-                if (line == null) break; // Handle case where file has fewer rows
+                if (line == null) break; // menjaga jika file kosong
                 
                 // Remove spaces if any, then process character by character
                 line = line.replaceAll("\\s+", "");
@@ -81,13 +81,13 @@ public class levelManager {
                 for (int col = 0; col < gp.maxScreenCol && col < line.length(); col++) {
                     char ch = line.charAt(col);
                     switch (ch) {
-                        case '#': // Wall
+                        case '#': // dinding
                             mapLevelnum[row][col] = 1;
                             break;
-                        case '.': // Path (earth)
+                        case '.': // jalan (earth)
                             mapLevelnum[row][col] = 0;
                             break;
-                        case 'S': // Start position
+                        case 'S': // posisi mulai
                             mapLevelnum[row][col] = 0; // Start is also a path
                             startRow = row;
                             startCol = col;
@@ -122,9 +122,9 @@ public class levelManager {
                 int mapNum = mapLevelnum[row][col];
                 g2.drawImage(level[mapNum].image, x, y, gp.tileSize, gp.tileSize, null);
                 
-                // Draw portal effect for finish point (value 2)
+                // efek portal saat finish (value 2)
                 if (mapNum == 2) {
-                    // Draw glowing portal effect
+                    // efek portal bercahaya
                     g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
                     g2.setColor(new Color(135, 206, 250, 150)); // Light blue glow
                     g2.fillOval(x + 4, y + 4, gp.tileSize - 8, gp.tileSize - 8);
@@ -144,7 +144,7 @@ public class levelManager {
 
     }
     
-    // Get tile type at world coordinates
+    // ambil tipe tile di kordinat map
     public int getTileType(int worldX, int worldY) {
         int col = worldX / gp.tileSize;
         int row = worldY / gp.tileSize;
@@ -156,17 +156,18 @@ public class levelManager {
         return mapLevelnum[row][col];
     }
     
-    // Check if position is finish point
+    // pengecekan jika tile yang di injak merupakan finish
     public boolean isFinishPoint(int worldX, int worldY) {
         int col = worldX / gp.tileSize;
         int row = worldY / gp.tileSize;
-        
+
         if (col < 0 || col >= gp.maxScreenCol || row < 0 || row >= gp.maxScreenRow) {
             return false;
         }
-        
+
         return mapLevelnum[row][col] == 2;
     }
+
 
 }
 
