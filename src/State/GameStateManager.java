@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 public class GameStateManager {
     private GamePanel gp;
     private GameState currentState;
+    private int previousState = -1; // Track previous state for ESC navigation
 
     // State instances
     private MenuState menuState;
@@ -44,6 +45,14 @@ public class GameStateManager {
     }
 
     public void setState(int state) {
+        // Save current state as previous before switching (except first time)
+        if (currentState != null) {
+            int currentStateId = getCurrentStateId();
+            if (currentStateId != -1 && state != currentStateId) {
+                previousState = currentStateId;
+            }
+        }
+        
         switch (state) {
             case 0: // MENU_STATE
                 currentState = menuState;
@@ -66,6 +75,26 @@ public class GameStateManager {
                 break;
         }
         resetKeyStates();
+    }
+    
+    private int getCurrentStateId() {
+        if (currentState == menuState) return gp.MENU_STATE;
+        if (currentState == levelSelectionState) return gp.LEVEL_SELECTION_STATE;
+        if (currentState == informationState) return gp.INFORMATION_STATE;
+        if (currentState == playingState) return gp.PLAYING_STATE;
+        if (currentState == levelCompleteState) return gp.LEVEL_COMPLETE_STATE;
+        if (currentState == gameOverState) return gp.GAME_OVER_STATE;
+        return -1;
+    }
+    
+    public int getPreviousState() {
+        return previousState;
+    }
+    
+    public void goBackToPreviousState() {
+        if (previousState != -1) {
+            setState(previousState);
+        }
     }
 
     private void resetKeyStates() {

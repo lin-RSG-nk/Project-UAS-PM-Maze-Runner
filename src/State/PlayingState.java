@@ -20,7 +20,8 @@ public class PlayingState implements GameState {
 
     private void handlePause() {
         if (gp.keyH.escPressed && !gp.keyH.escWasPressed) {
-            gp.gameStateManager.setState(gp.MENU_STATE);
+            // Return to level selection menu instead of main menu
+            gp.gameStateManager.setState(gp.LEVEL_SELECTION_STATE);
             gp.keyH.escWasPressed = true;
         } else if (!gp.keyH.escPressed) {
             gp.keyH.escWasPressed = false;

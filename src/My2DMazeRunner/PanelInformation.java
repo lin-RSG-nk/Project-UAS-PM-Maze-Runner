@@ -8,7 +8,7 @@ public class PanelInformation {
 
     // Panel dimensions and positioning
     private int panelWidth = 850;
-    private int panelHeight = 600;
+    private int panelHeight = 650;
     private int panelX;
     private int panelY;
 
@@ -99,8 +99,12 @@ public class PanelInformation {
         drawKeyInstruction(g2, "D", "Move the runner to the right", panelX + leftPadding,
                 startY + (lineSpacing * 3), buttonTextGap, fm, textVerticalCenter);
         
+        // AI Mode instruction
+        drawKeyInstruction(g2, "F", "Enable AI mode to solve the maze", panelX + leftPadding,
+                startY + (lineSpacing * 4), buttonTextGap, fm, textVerticalCenter);
+        
         // Alternative control hint
-        int altHintY = startY + (lineSpacing * 4) + 15;
+        int altHintY = startY + (lineSpacing * 5) + 15;
         g2.setFont(new Font("Courier New", Font.PLAIN, 22));
         g2.setColor(new Color(255, 255, 255, 200));
         String altHint = "You can also use the Arrow Keys (↑ ↓ ← →)";
