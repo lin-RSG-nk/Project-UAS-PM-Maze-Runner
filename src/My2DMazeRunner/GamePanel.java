@@ -74,6 +74,11 @@ public class GamePanel extends JPanel implements Runnable {
         if (levelM != null) {
             player.x = levelM.startCol * tileSize;
             player.y = levelM.startRow * tileSize;
+
+            // --- PERBAIKAN DI SINI ---
+            // Reset status Player (matikan AI dan hapus path lama)
+            player.resetState();
+            // -------------------------
         }
         gameStateManager.setState(PLAYING_STATE);
     }

@@ -8,7 +8,9 @@ public class KeyHandler implements KeyListener {
     public boolean upPressed, downPressed, leftPressed, rightPressed;
     public boolean enterPressed;
     public boolean escPressed;
-    
+    public boolean fPressed;
+
+
     //For menu navigation - to prevent continuous scrolling
     public boolean upWasPressed, downWasPressed, enterWasPressed, escWasPressed;
 
@@ -39,6 +41,10 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_ESCAPE){
             escPressed = true;
         }
+        if (code == KeyEvent.VK_F){
+            fPressed = true;
+        }
+
     }
 
     @Override
@@ -63,5 +69,9 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_ESCAPE){
             escPressed = false;
         }
+        if (code == KeyEvent.VK_F){
+            fPressed = false;
+        }
+
     }
 }
