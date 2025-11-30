@@ -31,6 +31,7 @@ public class GamePanel extends JPanel implements Runnable {
     public levelManager levelM;
     public Player player;
     public BufferedImage menuBackground;
+    public SoundManager soundManager;
 
     // Tambahkan variabel currentLevel yang missing
     public int currentLevel = 1; // Current selected level (1, 2, or 3)
@@ -55,6 +56,7 @@ public class GamePanel extends JPanel implements Runnable {
     private void initializeGameComponents() {
         levelM = new levelManager(this);
         player = new Player(this, keyH);
+        soundManager = new SoundManager();
         gameStateManager = new GameStateManager(this);
     }
 
@@ -79,6 +81,10 @@ public class GamePanel extends JPanel implements Runnable {
             // Reset status Player (matikan AI dan hapus path lama)
             player.resetState();
             // -------------------------
+        }
+        // Play game background music
+        if (soundManager != null) {
+            soundManager.playGameMusic();
         }
         gameStateManager.setState(PLAYING_STATE);
     }

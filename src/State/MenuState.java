@@ -37,6 +37,11 @@ public class MenuState implements GameState {
 
     private void handleMenuSelection() {
         if (gp.keyH.enterPressed && !gp.keyH.enterWasPressed) {
+            // Play click sound when menu is selected
+            if (gp.soundManager != null) {
+                gp.soundManager.playClickSound();
+            }
+            
             switch (menuOption) {
                 case 0: // Level
                     gp.gameStateManager.setState(gp.LEVEL_SELECTION_STATE);

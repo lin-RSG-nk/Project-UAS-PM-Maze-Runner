@@ -102,15 +102,6 @@ public class PanelInformation {
         // AI Mode instruction
         drawKeyInstruction(g2, "F", "Enable AI mode to solve the maze", panelX + leftPadding,
                 startY + (lineSpacing * 4), buttonTextGap, fm, textVerticalCenter);
-        
-        // Alternative control hint
-        int altHintY = startY + (lineSpacing * 5) + 15;
-        g2.setFont(new Font("Courier New", Font.PLAIN, 22));
-        g2.setColor(new Color(255, 255, 255, 200));
-        String altHint = "You can also use the Arrow Keys (↑ ↓ ← →)";
-        FontMetrics altFm = g2.getFontMetrics();
-        int altHintX = panelX + (panelWidth - altFm.stringWidth(altHint)) / 2;
-        g2.drawString(altHint, altHintX, altHintY);
 
         // Draw back instruction at the bottom
         g2.setFont(backInstructionFont);
