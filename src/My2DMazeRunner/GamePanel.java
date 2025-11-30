@@ -82,9 +82,9 @@ public class GamePanel extends JPanel implements Runnable {
             player.resetState();
             // -------------------------
         }
-        // Play game background music
+        // Stop menu music when starting game
         if (soundManager != null) {
-            soundManager.playGameMusic();
+            soundManager.stopMenuMusic();
         }
         gameStateManager.setState(PLAYING_STATE);
     }

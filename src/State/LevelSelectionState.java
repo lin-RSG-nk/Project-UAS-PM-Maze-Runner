@@ -39,6 +39,11 @@ public class LevelSelectionState implements GameState {
 
     private void handleLevelSelection() {
         if (gp.keyH.enterPressed && !gp.keyH.enterWasPressed) {
+            // Play click sound when level is selected
+            if (gp.soundManager != null) {
+                gp.soundManager.playClickSound();
+            }
+            
             // Gunakan gp.currentLevel bukan variabel lokal
             gp.currentLevel = levelOption + 1;
             gp.startLevel(gp.currentLevel);

@@ -20,6 +20,12 @@ public class PlayingState implements GameState {
 
     private void handlePause() {
         if (gp.keyH.escPressed && !gp.keyH.escWasPressed) {
+            // Stop game music when returning to menu
+            if (gp.soundManager != null) {
+                gp.soundManager.stopGameMusic();
+            }
+            // Reset player music flag
+            gp.player.gameMusicStarted = false;
             // Return to level selection menu instead of main menu
             gp.gameStateManager.setState(gp.LEVEL_SELECTION_STATE);
             gp.keyH.escWasPressed = true;

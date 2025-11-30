@@ -17,6 +17,7 @@ public class Player extends Entity {
     PathFinder pFinder;
     boolean fKeyReleased = true;
     public boolean searching = false; // Status sedang scanning visual
+    public boolean gameMusicStarted = false; // Flag untuk memastikan game music hanya diputar sekali
 
     public Player(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -132,6 +133,12 @@ public class Player extends Entity {
                     y = newY;
                 }
             }
+        }
+        
+        // Play game music when character starts moving (only once)
+        if (isMoving && !gameMusicStarted && gp.soundManager != null) {
+            gp.soundManager.playGameMusic();
+            gameMusicStarted = true;
         }
 
         // Update posisi collision box
@@ -312,6 +319,9 @@ public class Player extends Entity {
         // 3. Reset animasi/arah (opsional, agar terlihat rapi saat mulai)
         direction = "down";
         spriteNumber = 1;
+        
+        // 4. Reset game music flag
+        gameMusicStarted = false;
     }
 
 }

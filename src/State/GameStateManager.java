@@ -63,6 +63,10 @@ public class GameStateManager {
                 break;
             case 1: // LEVEL_SELECTION_STATE
                 currentState = levelSelectionState;
+                // Play main menu background music (same as main menu)
+                if (gp.soundManager != null) {
+                    gp.soundManager.playMenuMusic();
+                }
                 break;
             case 2: // INFORMATION_STATE
                 currentState = informationState;
