@@ -75,44 +75,38 @@ public class Player extends Entity {
         if (keyH.fPressed && fKeyReleased) {
             onPath = !onPath;
             fKeyReleased = false;
-
             if(onPath) {
-                // MULAI PROSES SEARCHING VISUAL
-                startSearch();
+                startSearch(); // Method visualisasi search
             } else {
-                // Stop dan reset
                 searching = false;
                 pFinder.pathList.clear();
             }
         }
-        if (!keyH.fPressed) {
-            fKeyReleased = true;
-        }
-        boolean isMoving = false;
+        if (!keyH.fPressed) fKeyReleased = true;
 
+        boolean isMoving = false; // Default false
 
         if (onPath) {
-
-            if(searching) {
-                // --- FASE SCANNING (VISUALISASI) ---
-                // Jalankan 1 step scan per frame (atau bisa di loop 5x biar lebih cepet)
-                boolean found = pFinder.searchStep();
-
-                if(found) {
-                    searching = false; // Selesai scanning, lanjut jalan
+            // --- Mode AI ---
+            if (searching) {
+                // Scanning / 1 frame(bisa di tinggkatkan untuk mempercepat scanning)
+                for(int i=0; i< 1; i++) {
+                    boolean found = pFinder.searchStep();
+                    if(found) {
+                        searching = false;
+                        break;
+                    }
                 }
-                // Jika belum found, frame berikutnya akan lanjut scan lagi
-
             } else {
-                // --- FASE JALAN (MOVEMENT) ---
-                automatedMove();
+                // jalan otomatis
+                // cek satus jalan
+                isMoving = automatedMove();
             }
-
         } else {
+            //mode manual
             int newX = x;
             int newY = y;
 
-            // Handle movement input
             if (keyH.upPressed) {
                 direction = "up";
                 newY -= speed;
@@ -131,8 +125,8 @@ public class Player extends Entity {
                 isMoving = true;
             }
 
-            // Check collision (hanya untuk manual, AI diasumsikan sudah pintar menghindari tembok)
-            if (isMoving) { // Cek collision hanya jika ada input gerak
+            // Cek Collision Manual
+            if (isMoving) {
                 if (!checkCollision(newX, newY)) {
                     x = newX;
                     y = newY;
@@ -140,14 +134,14 @@ public class Player extends Entity {
             }
         }
 
-        // Update posisi collision box (berlaku untuk Manual & AI)
+        // Update posisi collision box
         collisionX = x + collisionDefaultX;
         collisionY = y + collisionDefaultY;
 
-        // Logic ini sekarang menangani animasi baik untuk AI maupun Manual
+
         if (isMoving) {
             spriteCounter++;
-            if (spriteCounter > 10) {
+            if (spriteCounter > 7) { // Ubah angka ini untuk kecepatan animasi kaki
                 if (spriteNumber == 1) {
                     spriteNumber = 2;
                 } else if (spriteNumber == 2) {

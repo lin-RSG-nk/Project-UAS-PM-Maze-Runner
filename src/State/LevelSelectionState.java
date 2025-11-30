@@ -59,7 +59,6 @@ public class LevelSelectionState implements GameState {
 
     @Override
     public void draw(Graphics2D g2) {
-        // ... kode drawing tetap sama seperti sebelumnya
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 
         if (gp.menuBackground != null) {
