@@ -2,7 +2,7 @@ package LEVEL;
 
 import java.awt.image.BufferedImage;
 
-public class Tingkatan {
+public class Level {
 
     public BufferedImage image;
 }

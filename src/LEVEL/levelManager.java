@@ -13,14 +13,14 @@ import java.io.InputStreamReader;
 public class levelManager {
 
     GamePanel gp;
-    Tingkatan [] level ;
+    Level[] level ;
     int[][] mapLevelnum;
     public int startRow = 1, startCol = 1; // Start position (S)
     public int goalRow = 22, goalCol = 37; // Goal position (G)
 
     public levelManager(GamePanel gp){
         this.gp = gp;
-        level = new Tingkatan[10];
+        level = new Level[10];
 
         mapLevelnum = new int[gp.maxScreenRow][gp.maxScreenCol];
         getLevelImage();
@@ -29,14 +29,13 @@ public class levelManager {
     public void getLevelImage(){
 
         try{
-            level [0] = new Tingkatan();
+            level [0] = new Level();
             level [0].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/grass.png"));
 
-            level [1] = new Tingkatan();
+            level [1] = new Level();
             level [1].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/wall.png"));
 
-            // Portal/Finish point uses earth tile (will be drawn with special effect)
-            level [2] = new Tingkatan();
+            level [2] = new Level();
             level [2].image = ImageIO.read(getClass().getResourceAsStream("/Tiles/grass.png"));
 
         }catch (IOException e){
@@ -50,15 +49,18 @@ public class levelManager {
             switch (levelNumber) {
                 case 1:
                     mapFile = "/Map/Maplvl1.txt";
+
                     break;
                 case 2:
                     mapFile = "/Map/Maplvl2.txt";
                     break;
                 case 3:
                     mapFile = "/Map/Maplvl3.txt";
+
                     break;
                 default:
                     mapFile = "/Map/Maplvl1.txt";
+
                     break;
             }
             

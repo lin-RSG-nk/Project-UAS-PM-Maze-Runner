@@ -58,14 +58,14 @@ public class Player extends Entity {
 
     public void getPlayerImage() {
         try {
-            down1 = ImageIO.read(getClass().getResourceAsStream("/Player/boy_down_1.png"));
-            down2 = ImageIO.read(getClass().getResourceAsStream("/Player/boy_down_2.png"));
-            up1 = ImageIO.read(getClass().getResourceAsStream("/Player/boy_up_1.png"));
-            up2 = ImageIO.read(getClass().getResourceAsStream("/Player/boy_up_2.png"));
-            left1 = ImageIO.read(getClass().getResourceAsStream("/Player/boy_left_1.png"));
-            left2 = ImageIO.read(getClass().getResourceAsStream("/Player/boy_left_2.png"));
-            right1 = ImageIO.read(getClass().getResourceAsStream("/Player/boy_right_1.png"));
-            right2 = ImageIO.read(getClass().getResourceAsStream("/Player/boy_right_2.png"));
+            down1 = ImageIO.read(getClass().getResourceAsStream("/Player/player_walk_down_1.png"));
+            down2 = ImageIO.read(getClass().getResourceAsStream("/Player/player_walk_down_2.png"));
+            up1 = ImageIO.read(getClass().getResourceAsStream("/Player/player_walk_up_1.png"));
+            up2 = ImageIO.read(getClass().getResourceAsStream("/Player/player_walk_up_2.png"));
+            left1 = ImageIO.read(getClass().getResourceAsStream("/Player/player_left.png"));
+            left2 = ImageIO.read(getClass().getResourceAsStream("/Player/player_walk_left_1.png"));
+            right1 = ImageIO.read(getClass().getResourceAsStream("/Player/player_right.png"));
+            right2 = ImageIO.read(getClass().getResourceAsStream("/Player/player_walk_right.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -136,7 +136,7 @@ public class Player extends Entity {
         }
         
         // Play game music when character starts moving (only once)
-        if (isMoving && !gameMusicStarted && gp.soundManager != null) {
+        if ( !gameMusicStarted && gp.soundManager != null) {
             gp.soundManager.playGameMusic();
             gameMusicStarted = true;
         }
@@ -305,7 +305,6 @@ public class Player extends Entity {
             return false;
         }
     }
-    // Masukkan di dalam class Player (misalnya di bawah method setDefaultValues)
     public void resetState() {
         // 1. Matikan mode AI
         onPath = false;
@@ -313,10 +312,10 @@ public class Player extends Entity {
         // 2. Bersihkan sisa jalur dari level sebelumnya
         if (pFinder != null) {
             pFinder.pathList.clear();
-            pFinder.resetNodes(); // Opsional: reset status node di pathfinder
+            pFinder.resetNodes();
         }
 
-        // 3. Reset animasi/arah (opsional, agar terlihat rapi saat mulai)
+        // 3. Reset animasi/arah
         direction = "down";
         spriteNumber = 1;
         

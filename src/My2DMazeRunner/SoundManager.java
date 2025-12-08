@@ -9,7 +9,7 @@ public class SoundManager {
     private Clip gameMusicClip;
     
     private boolean menuMusicPlaying = false;
-    private boolean gameMusicPlaying = false;
+    public boolean gameMusicPlaying = false;
     
     public SoundManager() {
         // Initialize sound manager

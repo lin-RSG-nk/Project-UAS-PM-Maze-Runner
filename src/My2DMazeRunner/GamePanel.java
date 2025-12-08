@@ -62,7 +62,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     private void loadMenuImage() {
         try {
-            menuBackground = ImageIO.read(getClass().getResourceAsStream("/Player/MainMenu.jpg"));
+            menuBackground = ImageIO.read(getClass().getResourceAsStream("/Menu/MainMenu.jpg"));
         } catch (IOException e) {
             e.printStackTrace();
         }
