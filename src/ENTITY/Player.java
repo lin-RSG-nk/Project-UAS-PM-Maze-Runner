@@ -136,7 +136,7 @@ public class Player extends Entity {
         }
         
         // Play game music when character starts moving (only once)
-        if ( !gameMusicStarted && gp.soundManager != null) {
+        if (isMoving && !gameMusicStarted && gp.soundManager != null) {
             gp.soundManager.playGameMusic();
             gameMusicStarted = true;
         }
