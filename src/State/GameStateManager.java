@@ -91,6 +91,8 @@ public class GameStateManager {
                     gp.soundManager.stopGameMusic();
                 }
                 currentState = levelCompleteState;
+                ((LevelCompleteState) levelCompleteState).setLevelCompleteTime(System.currentTimeMillis());
+
                 break;
             case 5: // GAME_OVER_STATE
                 //Musik game mati

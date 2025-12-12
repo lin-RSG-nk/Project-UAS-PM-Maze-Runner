@@ -64,4 +64,5 @@ public class LevelCompleteState implements GameState {
         g2.setColor(new Color(255, 255, 150));
         g2.drawString(levelText, levelX, messageY + 60);
     }
+
 }
