@@ -14,7 +14,7 @@ public class Player extends Entity {
 
 
     public boolean onPath = false; // Status apakah AI aktif
-    PathFinder pFinder;
+    public PathFinder pFinder;
     boolean fKeyReleased = true;
     public boolean searching = false; // Status sedang scanning visual
     public boolean gameMusicStarted = false; // Flag untuk memastikan game music hanya diputar sekali
@@ -308,6 +308,7 @@ public class Player extends Entity {
     public void resetState() {
         // 1. Matikan mode AI
         onPath = false;
+        searching = false;
 
         // 2. Bersihkan sisa jalur dari level sebelumnya
         if (pFinder != null) {
@@ -318,9 +319,14 @@ public class Player extends Entity {
         // 3. Reset animasi/arah
         direction = "down";
         spriteNumber = 1;
-        
+
         // 4. Reset game music flag
         gameMusicStarted = false;
+
+        // 5. Hentikan musik game jika sedang berjalan
+        if (gp.soundManager != null) {
+            gp.soundManager.stopGameMusic();
+        }
     }
 
 }

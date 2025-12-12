@@ -52,33 +52,52 @@ public class GameStateManager {
                 previousState = currentStateId;
             }
         }
-        
+
+        // Hentikan musik yang sesuai sebelum berpindah state
         switch (state) {
             case 0: // MENU_STATE
-                currentState = menuState;
-                // Play main menu background music
+                //Musik game mati
                 if (gp.soundManager != null) {
+                    gp.soundManager.stopGameMusic();
                     gp.soundManager.playMenuMusic();
                 }
+                currentState = menuState;
                 break;
             case 1: // LEVEL_SELECTION_STATE
-                currentState = levelSelectionState;
-                // Play main menu background music (same as main menu)
+                //Musik game mati
                 if (gp.soundManager != null) {
+                    gp.soundManager.stopGameMusic();
                     gp.soundManager.playMenuMusic();
                 }
+                currentState = levelSelectionState;
                 break;
             case 2: // INFORMATION_STATE
+                //Musik game mati
+                if (gp.soundManager != null) {
+                    gp.soundManager.stopGameMusic();
+                }
                 currentState = informationState;
                 break;
             case 3: // PLAYING_STATE
+                // Hentikan musik menu, musik game akan diputar oleh player
+                if (gp.soundManager != null) {
+                    gp.soundManager.stopMenuMusic();
+                }
                 currentState = playingState;
                 break;
             case 4: // LEVEL_COMPLETE_STATE
+                //Musik game mati
+                if (gp.soundManager != null) {
+                    gp.soundManager.stopGameMusic();
+                }
                 currentState = levelCompleteState;
-                ((LevelCompleteState) levelCompleteState).setLevelCompleteTime(System.currentTimeMillis());
                 break;
             case 5: // GAME_OVER_STATE
+                //Musik game mati
+                if (gp.soundManager != null) {
+                    gp.soundManager.stopGameMusic();
+                    gp.soundManager.playMenuMusic(); // Mainkan musik menu di game over
+                }
                 currentState = gameOverState;
                 break;
         }

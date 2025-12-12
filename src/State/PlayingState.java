@@ -23,9 +23,18 @@ public class PlayingState implements GameState {
             // Stop game music when returning to menu
             if (gp.soundManager != null) {
                 gp.soundManager.stopGameMusic();
+                gp.soundManager.playMenuMusic();
             }
             // Reset player music flag
             gp.player.gameMusicStarted = false;
+            // Reset AI mode jika aktif
+            if (gp.player.onPath) {
+                gp.player.onPath = false;
+                gp.player.searching = false;
+                if (gp.player.pFinder != null) {
+                    gp.player.pFinder.pathList.clear();
+                }
+            }
             // Return to level selection menu instead of main menu
             gp.gameStateManager.setState(gp.LEVEL_SELECTION_STATE);
             gp.keyH.escWasPressed = true;

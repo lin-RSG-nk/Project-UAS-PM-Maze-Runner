@@ -77,15 +77,11 @@ public class GamePanel extends JPanel implements Runnable {
             player.x = levelM.startCol * tileSize;
             player.y = levelM.startRow * tileSize;
 
-            // --- PERBAIKAN DI SINI ---
-            // Reset status Player (matikan AI dan hapus path lama)
+            // Reset status Player (AI mati dan hapus path lama)
             player.resetState();
-            // -------------------------
         }
-        // Stop menu music when starting game
-        if (soundManager != null) {
-            soundManager.stopMenuMusic();
-        }
+        // Reset musik game sebelum mulai level baru
+        resetGameMusic();
         gameStateManager.setState(PLAYING_STATE);
     }
 
@@ -123,5 +119,14 @@ public class GamePanel extends JPanel implements Runnable {
         Graphics2D g2 = (Graphics2D) g;
         gameStateManager.draw(g2);
         g2.dispose();
+    }
+    // Tambahkan method ini di class GamePanel
+    public void resetGameMusic() {
+        if (soundManager != null) {
+            soundManager.stopGameMusic();
+        }
+        if (player != null) {
+            player.gameMusicStarted = false;
+        }
     }
 }
