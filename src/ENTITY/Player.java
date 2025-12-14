@@ -235,30 +235,8 @@ public class Player extends Entity {
         // drawCollisionBox(g2);
     }
 
-    // Method untuk debugging - gambar collision box
-    public void drawCollisionBox(Graphics2D g2) {
-        g2.setColor(Color.RED);
-        g2.drawRect(collisionX, collisionY, collisionWidth, collisionHeight);
-    }
-    // Method untuk memicu pencarian jalan
-    public void searchPath() {
-        // Konversi posisi pixel player ke grid
-        int startCol = (x + collisionDefaultX) / gp.tileSize;
-        int startRow = (y + collisionDefaultY) / gp.tileSize;
 
-        // Ambil tujuan dari levelManager
-        int goalCol = gp.levelM.goalCol;
-        int goalRow = gp.levelM.goalRow;
 
-        pFinder.setNodes(startCol, startRow, goalCol, goalRow);
-
-        if (pFinder.searchStep()) {
-            // Path ketemu
-        } else {
-            // Path tidak ketemu (mungkin tertutup tembok)
-            onPath = false;
-        }
-    }
 
     // Method untuk menggerakkan player secara otomatis
     public boolean automatedMove() {
